@@ -51,21 +51,19 @@ const page: React.FC = () => {
         <div className="tr-cnt">
           {item.map((item, index) => {
             return (
-              <div className="m-img" key={index}>
-                <a
-                  href={
-                    '/information?className=' +
-                    item.c_name +
-                    '&date=' +
-                    item.date
-                  }
-                  onClick={() => {
-                    r_change = true;
-                  }}
-                >
+              <a
+                href={
+                  '/information?className=' + item.c_name + '&date=' + item.date
+                }
+                key={index}
+                onClick={() => {
+                  r_change = true;
+                }}
+              >
+                <div className="m-img">
                   <img src={item.img} alt="" />
-                </a>
-              </div>
+                </div>
+              </a>
             );
           })}
         </div>
