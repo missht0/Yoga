@@ -23,8 +23,6 @@ class SlideItem extends React.Component {
   };
 
   handleTouchMove = (e) => {
-    console.log(e.type);
-    console.log(this.startX, this.startY);
     // 若想阻止冒泡且最外层盒子为scrollView，不可用e.stopPropogagation()，否则页面卡死
     if (e.type === 'touchmove') {
       this.currentX = e.touches[0].pageX;
@@ -44,7 +42,6 @@ class SlideItem extends React.Component {
       return;
     }
     const distance = this.moveX >= 0 ? 0 : -70;
-    console.log(distance);
     this.setState({
       moveStyle: {
         transform: `translateX(${distance}px)`,
@@ -55,7 +52,6 @@ class SlideItem extends React.Component {
     this.startX = undefined;
   };
   back = () => {
-    console.log('back');
     this.setState({
       moveStyle: {
         transform: `translateX(0px)`,
