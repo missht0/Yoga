@@ -1,0 +1,68 @@
+#root {
+  max-height: 100vh;
+  .m-alert {
+    img {
+      max-height: 1.5rem;
+    }
+  }
+  .ant-picker-calendar {
+    .ant-picker-calendar-header {
+      padding: 0 0;
+      padding-bottom: 1rem;
+    }
+    .ant-picker-calendar-date-content {
+      max-height: 10vh;
+    }
+
+    .ant-radio-group {
+      display: none;
+    }
+  }
+
+  // .ant-picker-calendar-year-select,.ant-picker-calendar-month-select{
+  //   width: 40%;
+  // }
+}
+
+.tr-cnt {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  a {
+    max-height: 40%;
+
+    img {
+      max-height: 100%;
+    }
+  }
+}
+
+.ant-modal-root {
+  & > .ant-modal-wrap {
+    top: -5rem;
+    & > .ant-modal {
+      & > .ant-modal-content {
+        & > .ant-modal-header {
+          padding: 0px 24px;
+        }
+        & > .ant-modal-body {
+          & > .schedule {
+            .ant-form-item {
+              margin-bottom: 10px;
+            }
+            .ant-row-end {
+              width: 100%;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// 隐藏滚动条
+::-webkit-scrollbar {
+  display: none; /* Chrome Safari */
+}
