@@ -25,10 +25,12 @@ const Schedule = (props: ScheduleProps) => {
   const [form] = Form.useForm();
   const onFinish = (values: any) => {
     values.date = props.date;
-    values.m_time = [
-      values.time[0] === undefined ? undefined : values.time[0].format('HH:mm'),
-      values.time[1] === undefined ? undefined : values.time[1].format('HH:mm'),
-    ];
+    console.log(values);
+
+    values.m_time =
+      values.time === undefined
+        ? undefined
+        : [values.time[0].format('HH:mm'), values.time[1].format('HH:mm')];
     console.log('Received values of form: ', values);
     props.handleCancel();
   };
