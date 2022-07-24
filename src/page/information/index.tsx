@@ -17,6 +17,7 @@ import {
   Row,
   Col,
 } from 'antd';
+import { LeftCircleTwoTone } from '@ant-design/icons';
 import SlideItem from '../../component/slideItem';
 
 const c_name = new URLSearchParams(window.location.search).get('c_name');
@@ -100,10 +101,16 @@ const Information: React.FC = () => {
       console.log(s_info);
     };
   };
-  console.log(s_info);
+  const backHome = () => {
+    history.go(-1);
+  };
 
   return (
     <div className="information">
+      <div className="title">
+        <LeftCircleTwoTone onClick={backHome} />
+        <span>课程详情</span>
+      </div>
       <div className="m-alert">
         <Alert
           message={item.s_time + '~' + item.e_time + ' ' + item.place}

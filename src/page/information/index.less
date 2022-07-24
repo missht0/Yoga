@@ -1,5 +1,16 @@
 #root {
   & > .information {
+    .title {
+      height: 2rem;
+      font-size: 1.3rem;
+      text-align: center;
+      & > :nth-child(1) {
+        font-size: 1.5rem;
+        position: absolute;
+        left: 0.3rem;
+        top: 0.3rem;
+      }
+    }
     .m-alert {
       img {
         max-height: 1.5rem;
@@ -12,27 +23,29 @@
     }
     .m-cnt {
       .m-cnt-title {
+        margin-top: 1rem;
         color: #1890ff;
         text-align: center;
         font-weight: bold;
       }
       .m-cnt-list {
+        margin-top: 1rem;
+
         .ant-row {
           text-align: center;
-          padding: 0.3rem 0;
+          padding: 0.5rem 0;
           font-size: 1rem;
           background-color: white;
-          height: 2rem;
-          margin-bottom: 12px;
+          height: 3rem;
+          // margin-bottom: 12px;
+          // 阴影
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
         }
         .today {
           color: #00c900;
         }
         .default {
           color: red;
-        }
-        .ant-row:hover {
-          background-color: #e6f7ff;
         }
       }
     }

@@ -75,7 +75,11 @@ const page: React.FC = () => {
       setClickdate(value.format('YYYY-MM-DD'));
       console.log('click', value.format('YYYY-MM-DD'));
     }
-    if (isModalVisible === false && r_change === false) {
+    if (
+      isModalVisible === false &&
+      r_change === false &&
+      value >= moment('00:00:00', 'HH:mm:ss')
+    ) {
       showModal();
     }
   };
