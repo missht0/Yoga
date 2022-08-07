@@ -1,44 +1,70 @@
 import './index.less';
-import { Calendar } from 'antd';
-import type { CalendarMode } from 'antd/es/calendar/generateCalendar';
-import type { Moment } from 'moment';
-import React, { FC } from 'react';
-import icon_yoga from '../../../public/img/class/yoga.svg';
-import { useState } from 'react';
+import { LeftOutlined } from '@ant-design/icons';
 import {
   Button,
   Modal,
   TimePicker,
   Form,
   Input,
-  InputNumber,
-  Select,
   Row,
   Col,
   Slider,
   Radio,
+  message,
 } from 'antd';
 import moment from 'moment';
+import { useEffect } from 'react';
+import Api from '../../request/request';
 
 const date = new URLSearchParams(window.location.search).get('date');
 console.log(date);
 
 const Schedule = (props: ScheduleProps) => {
-  const RangePicker: any = TimePicker.RangePicker;
   const [form] = Form.useForm();
   const onFinish = (values: any) => {
-    values.date = props.date;
-    console.log(values);
-    values.m_time =
-      values.time === undefined ? undefined : values.time.format('HH:mm');
+    values.s_time =
+      values.time === undefined
+        ? null
+        : moment(
+            props.date + ' ' + values.time.format('HH:mm'),
+            'YYYY-MM-DD HH:mm',
+          );
+    // 把time_long中的分钟数转化为moment对象
+    values.time_long = moment('00:00:00', 'HH:mm:ss')
+      .add(moment.duration(values.time_long, 'minutes'))
+      .format('HH:mm:ss');
     console.log('Received values of form: ', values);
+    // 提交表单到数据库
+    const api = new Api();
+    api
+      .AddClass(values)
+      .then((res: any) => {
+        if (res.code === 1) {
+          message.success('添加成功');
+          console.log('success', res);
+        } else {
+          console.log('error', res);
+        }
+      })
+      .catch((err: any) => {
+        console.log(err);
+      });
+
+    props.handleCancel();
+  };
+  const backHome = () => {
     props.handleCancel();
   };
 
   return (
     //对话框
     <Modal
-      title="Add New Class"
+      title={
+        <div className="m-back">
+          <LeftOutlined onClick={backHome} />
+          <span>创建课程</span>
+        </div>
+      }
       visible={props.isModalVisible}
       onCancel={props.handleCancel}
       footer={null}
@@ -53,78 +79,85 @@ const Schedule = (props: ScheduleProps) => {
             time_long: 90,
             date: props.date,
             place: '师生活动中心2-108',
-            price_s: 400,
-            price: 60,
-            s_num: 10,
+            price: 400,
+            num: 10,
             c_name: '瑜伽',
           }}
         >
           <Form.Item label="课程" name="c_name">
-            <Select>
-              <Select.Option value="瑜伽">瑜伽</Select.Option>
-              <Select.Option value="围棋">围棋</Select.Option>
-              <Select.Option value="羽毛球">羽毛球</Select.Option>
-            </Select>
+            <Radio.Group size="large">
+              <Radio.Button defaultChecked={true} value="瑜伽">
+                瑜伽
+              </Radio.Button>
+              <Radio.Button defaultChecked={true} value="围棋">
+                围棋
+              </Radio.Button>
+              <Radio.Button defaultChecked={true} value="羽毛球">
+                羽毛球
+              </Radio.Button>
+            </Radio.Group>
           </Form.Item>
-          <Row justify="space-between">
-            <Col span={10}>
-              <Form.Item label="开始时间" name="time">
-                <TimePicker format="HH:mm" minuteStep={30} />
-              </Form.Item>
-            </Col>
-            <Col span={10.5}>
-              <Form.Item label="时长" name="time_long">
-                <Radio.Group>
-                  <Radio.Button value="60">60</Radio.Button>
-                  <Radio.Button value="90">90</Radio.Button>
-                  <Radio.Button value="120">120</Radio.Button>
-                </Radio.Group>
-              </Form.Item>
-            </Col>
-          </Row>
+          <Form.Item label="开始时间" name="time">
+            <TimePicker format="HH:mm" minuteStep={30} />
+          </Form.Item>
+          <Form.Item label="时长" name="time_long">
+            <Radio.Group>
+              <Radio.Button defaultChecked={true} value={60}>
+                60
+              </Radio.Button>
+              <Radio.Button defaultChecked={true} value={90}>
+                90
+              </Radio.Button>
+              <Radio.Button defaultChecked={true} value={120}>
+                120
+              </Radio.Button>
+              <Radio.Button defaultChecked={true} value={150}>
+                150
+              </Radio.Button>
+              <Radio.Button defaultChecked={true} value={180}>
+                180
+              </Radio.Button>
+            </Radio.Group>
+          </Form.Item>
           <Form.Item label="地点" name="place">
-            <Input />
+            <Input allowClear size="large" />
           </Form.Item>
           <Row justify="space-between">
             <Col span={24}>
-              <Form.Item label="预约金额" name="price_s">
+              <Form.Item label="预约金额" name="price">
                 <Slider
                   marks={{
-                    0: '0',
-                    // 50: '50',
-                    // 100: '100',
-                    // 150: '150',
-                    200: '200',
-                    // 250: '250',
-                    // 300: '300',
-                    // 350: '350',
+                    300: '300',
+                    350: '350',
                     400: '400',
-                    600: '600',
-                    800: '800',
+                    450: '450',
+                    500: '500',
                   }}
-                  step={50}
-                  max={800}
+                  step={10}
+                  min={300}
+                  max={500}
                 />
               </Form.Item>
             </Col>
-            {/* <Col span={8}>
-              <Form.Item label="非预约金额" name="price">
-                <InputNumber />
-              </Form.Item>
-            </Col> */}
           </Row>
-          <Form.Item label="人数" name="s_num">
+          <Form.Item label="人数" name="num">
             <Slider
-              max={20}
+              min={5}
+              max={12}
               marks={{
-                0: '0',
+                5: '5',
+                6: '6',
+                7: '7',
+                8: '8',
+                9: '9',
                 10: '10',
-                20: '20',
+                11: '11',
+                12: '12',
               }}
             />
           </Form.Item>
           <Row justify="end">
-            <Col>
+            <Col span={24}>
               <Form.Item>
                 <Button type="primary" htmlType="submit">
                   OK
