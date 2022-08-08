@@ -1,5 +1,5 @@
 import './index.less';
-import { Alert, Calendar } from 'antd';
+import { Alert, Calendar, message } from 'antd';
 import type { CalendarMode } from 'antd/es/calendar/generateCalendar';
 import moment, { Moment } from 'moment';
 import React, { useState, useEffect } from 'react';
@@ -124,7 +124,7 @@ const page: React.FC = () => {
       isModalVisible === false &&
       r_change === false &&
       value >= moment('00:00:00', 'HH:mm:ss') && //今天以后的日期
-      localStorage.getItem('user') != null // localStorage 中的user存在
+      localStorage.getItem('u_id') != null // localStorage 中的user存在
     ) {
       showModal();
     }
@@ -136,11 +136,12 @@ const page: React.FC = () => {
   };
 
   const checkuser = () => {
-    if (localStorage.getItem('user') === null) {
+    if (localStorage.getItem('u_id') === null) {
       window.location.href = '/login';
     } else {
       // 删除localStorage里的user
-      localStorage.removeItem('user');
+      localStorage.removeItem('u_id');
+      message.success('退出登录');
     }
   };
 
