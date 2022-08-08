@@ -1,6 +1,7 @@
 const axios = require('axios').default;
 const axiosOption = {
-  baseURL: 'http://121.5.5.157',
+  // baseURL: 'http://121.5.5.157',
+  baseURL: 'http://127.0.0.1:8000',
 };
 const instance = axios.create(axiosOption);
 
