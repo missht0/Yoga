@@ -9,6 +9,7 @@
 
 # production
 /dist
+/src/request
 
 # misc
 .DS_Store
