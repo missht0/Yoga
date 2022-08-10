@@ -283,7 +283,7 @@ const Information: React.FC = () => {
       </div>
       {localStorage.getItem('u_id') != null &&
       localStorage.getItem('is_teacher') === '0' &&
-      moment().diff(m_item.s_time, 's') > 0 ? (
+      moment().diff(m_item.s_time, 'm') < 0 ? (
         <div className="signup">
           {
             // 学员在黑名单
