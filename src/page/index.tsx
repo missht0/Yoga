@@ -105,9 +105,9 @@ const page: React.FC = () => {
                       '.svg')}
                     alt=""
                   />
-                  {localStorage.getItem('is_teacher') === '1' ? (
-                    <div className="num">{item.num}</div>
-                  ) : null}
+                  {/* {localStorage.getItem('is_teacher') === '1' ? ( */}
+                  <div className="num">{item.num}</div>
+                  {/* ) : null} */}
                 </div>
               </a>
             );

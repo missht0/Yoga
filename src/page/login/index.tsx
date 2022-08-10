@@ -31,6 +31,7 @@ const Login = () => {
 
           console.log('success', res);
         } else {
+          message.error('用户名或密码错误');
           console.log('error', res);
         }
       })
