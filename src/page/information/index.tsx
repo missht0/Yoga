@@ -1,14 +1,15 @@
 import './index.less';
-import React, { useEffect } from 'react';
-import icon_yoga from '../../../public/img/class/瑜伽.svg';
+import React, { useEffect, useReducer } from 'react';
 import { useState } from 'react';
-import { Alert, Row, Col } from 'antd';
-import { LeftOutlined } from '@ant-design/icons';
+import { Alert, Row, Col, Button } from 'antd';
 import SlideItem from '../../component/slideItem';
 import moment from 'moment';
 import Api from '@/request/request';
+import Svg from '../../component/svg';
 
 const Information: React.FC = () => {
+  const [isSignup, setIsSignup] = useState(false);
+  const [isdefault, setIsdefault] = useState(false);
   const [m_item, setM_item] = useState({
     c_id: 1,
     c_name: '瑜伽',
@@ -18,6 +19,19 @@ const Information: React.FC = () => {
     price: 400,
     num: 10,
   });
+  const [s_info, setS_info] = useState([
+    {
+      c_id: 1,
+      c_name: '瑜伽',
+      id: 4,
+      pay: 0,
+      signup: '08-06 10:00',
+      u_id: '',
+      u_name: '',
+      default: true,
+    },
+  ]);
+  const api = new Api();
   // 从url中获得get传值
   const get = (name: string) => {
     // 从url中获得get传值
@@ -41,19 +55,6 @@ const Information: React.FC = () => {
   ).toFixed(2);
   console.log(m_item);
 
-  const [s_info, setS_info] = useState([
-    {
-      c_id: 1,
-      c_name: '瑜伽',
-      id: 4,
-      pay: 0,
-      signup: '08-06 10:00',
-      u_id: '2020212205248',
-      u_name: 'lcy4',
-      default: true,
-    },
-  ]);
-  const api = new Api();
   useEffect(() => {
     api
       .GetSignupUsers({
@@ -63,7 +64,7 @@ const Information: React.FC = () => {
       })
       .then((res: any) => {
         if (res.code === 1) {
-          console.log('success', res);
+          console.log('GetSignupUsers success', res);
           setS_info(res.data);
         } else {
           console.log('error', res);
@@ -72,8 +73,37 @@ const Information: React.FC = () => {
       .catch((err: any) => {
         console.log(err);
       });
-  }, []);
-  console.log(s_info);
+  }, [isSignup]);
+  console.log(s_info, isSignup);
+
+  // 若已经报名，则设置isSignup为true
+  useEffect(() => {
+    s_info.map((item) => {
+      if (item.u_id === localStorage.getItem('u_id')) {
+        setIsSignup(true);
+      }
+    });
+  }, [s_info]);
+
+  // 是否在黑名单中
+  api
+    .IsDefault({
+      params: {
+        u_id: localStorage.getItem('u_id'),
+        c_name: m_item.c_name,
+      },
+    })
+    .then((res: any) => {
+      if (res.code === 1) {
+        console.log('IsDefault success', res);
+        setIsdefault(res.data);
+      } else {
+        console.log('error', res);
+      }
+    })
+    .catch((err: any) => {
+      console.log(err);
+    });
 
   const onDelete = (value: any) => {
     return () => {
@@ -90,7 +120,7 @@ const Information: React.FC = () => {
               })
               .then((res: any) => {
                 if (res.code === 1) {
-                  console.log('success', res);
+                  console.log('AddDefault success', res);
                 } else {
                   console.log('error', res);
                 }
@@ -109,10 +139,52 @@ const Information: React.FC = () => {
     history.go(-1);
   };
 
+  const handleup = () => {
+    api
+      .Signup({
+        c_id: m_item.c_id,
+        u_id: localStorage.getItem('u_id'),
+        c_name: m_item.c_name,
+        signup: moment().format('YYYY-MM-DD HH:mm'),
+        u_name: localStorage.getItem('u_name'),
+      })
+      .then((res: any) => {
+        if (res.code === 1) {
+          setIsSignup(true);
+          console.log('Signup success', res);
+        } else {
+          console.log('error', res);
+        }
+      })
+      .catch((err: any) => {
+        console.log(err);
+      });
+  };
+  const handledown = () => {
+    api
+      .Signdown({
+        c_id: m_item.c_id,
+        u_id: localStorage.getItem('u_id'),
+      })
+      .then((res: any) => {
+        if (res.code === 1) {
+          setIsSignup(false);
+          console.log('handledown success', res);
+        } else {
+          console.log('error', res);
+        }
+      })
+      .catch((err: any) => {
+        console.log(err);
+      });
+  };
+
   return (
     <div className="information">
       <div className="title">
-        <LeftOutlined onClick={backHome} />
+        <div className="m-svg" onClick={backHome}>
+          <Svg id={'arr_e_left'} size={24} color={`#bfbfbf`} />
+        </div>
         <span>课程详情</span>
       </div>
       <div className="m-alert">
@@ -156,7 +228,8 @@ const Information: React.FC = () => {
             if (
               item.default === false &&
               m_item.s_time < moment() &&
-              localStorage.getItem('u_id') != null
+              localStorage.getItem('u_id') != null &&
+              localStorage.getItem('is_teacher') === '1'
             ) {
               return (
                 <SlideItem
@@ -208,6 +281,34 @@ const Information: React.FC = () => {
           })}
         </div>
       </div>
+      {localStorage.getItem('u_id') != null &&
+      localStorage.getItem('is_teacher') === '0' ? (
+        <div className="signup">
+          {
+            // 学员在黑名单
+            isdefault ? (
+              <div className="up m-btn">
+                <Button type="primary" disabled size="large">
+                  无报名权限
+                </Button>
+              </div>
+            ) : // 如果未报名该课程
+            isSignup ? (
+              <div className="down m-btn">
+                <Button onClick={handledown} size="large">
+                  取消报名
+                </Button>
+              </div>
+            ) : (
+              <div className="up m-btn">
+                <Button type="primary" onClick={handleup} size="large">
+                  报名
+                </Button>
+              </div>
+            )
+          }
+        </div>
+      ) : null}
     </div>
   );
 };

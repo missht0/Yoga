@@ -40,6 +40,15 @@ class Api {
   AddDefault(data: any) {
     return request.post('/addDefault', data);
   }
+  IsDefault(data: any) {
+    return request.get('/isDefault', data);
+  }
+  Signup(data: any) {
+    return request.post('/signup', data);
+  }
+  Signdown(data: any) {
+    return request.post('/signdown', data);
+  }
 }
 export default Api;
 export const GetClassByMon = (data: any) => request.get('/getClassByMon', data);

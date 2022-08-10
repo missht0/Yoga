@@ -1,5 +1,4 @@
 import './index.less';
-import { LeftOutlined } from '@ant-design/icons';
 import {
   Button,
   Modal,
@@ -15,6 +14,7 @@ import {
 import moment from 'moment';
 import { useEffect } from 'react';
 import Api from '../../request/request';
+import Svg from '../../component/svg';
 
 const date = new URLSearchParams(window.location.search).get('date');
 console.log(date);
@@ -61,7 +61,9 @@ const Schedule = (props: ScheduleProps) => {
     <Modal
       title={
         <div className="m-back">
-          <LeftOutlined onClick={backHome} />
+          <div className="m-svg" onClick={backHome}>
+            <Svg id={'arr_e_left'} size={24} color={`#bfbfbf`} />
+          </div>
           <span>创建课程</span>
         </div>
       }

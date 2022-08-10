@@ -8,7 +8,7 @@
   }
   .icon_box {
     position: absolute;
-    padding: 4px;
+    padding: 4px 15px;
   }
   .ant-picker-calendar {
     .ant-picker-calendar-header {
@@ -46,9 +46,16 @@
 
     .m-img {
       max-width: 100%;
-
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-bottom: 5px;
       img {
         max-width: 100%;
+      }
+      .num {
+        margin-top: 0;
+        line-height: 8px;
       }
     }
   }
@@ -112,6 +119,14 @@
             }
           }
         }
+      }
+    }
+    .confirm {
+      & > .ant-modal-content {
+        height: unset !important;
+        position: absolute;
+        padding: 1rem 2rem !important;
+        bottom: 0;
       }
     }
   }

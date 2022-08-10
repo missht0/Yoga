@@ -1,12 +1,12 @@
 import './index.less';
-import { Alert, Calendar, message } from 'antd';
+import { Alert, Calendar, message, Modal } from 'antd';
 import type { CalendarMode } from 'antd/es/calendar/generateCalendar';
 import moment, { Moment } from 'moment';
 import React, { useState, useEffect } from 'react';
 import Schedule from './schedule';
 import Api from '../request/request';
 import Svg from '../component/svg';
-
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 const page: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [clickdate, setClickdate] = useState(moment().format('YYYY-MM-DD'));
@@ -21,9 +21,22 @@ const page: React.FC = () => {
       num: 10,
     },
   ]);
+  const { confirm } = Modal;
   let change = false;
-
   const api = new Api();
+
+  // 如果现在的时间距离储存的时间超过30min，则删除储存
+  if (
+    moment().diff(
+      moment(localStorage.getItem('time'), 'YYYY-MM-DD HH:mm'),
+      'minutes',
+    ) > 30
+  ) {
+    localStorage.removeItem('u_id');
+    localStorage.removeItem('u_name');
+    localStorage.removeItem('time');
+  }
+
   useEffect(() => {
     api
       .GetClassByMon({
@@ -43,16 +56,6 @@ const page: React.FC = () => {
         console.log(err);
       });
   }, [clickdate, isModalVisible]);
-
-  // useEffect(() => {
-  //   Api.GetClassById({}).then((res: any) => {
-  //     if (res.code === 0) {
-  //       setItem(res.data);
-  //     }
-  //   }).catch((err: any) => {
-  //     console.log(err);
-  //   });
-  // }, []);
 
   let r_change = false;
   const showModal = () => {
@@ -102,6 +105,9 @@ const page: React.FC = () => {
                       '.svg')}
                     alt=""
                   />
+                  {localStorage.getItem('is_teacher') === '1' ? (
+                    <div className="num">{item.num}</div>
+                  ) : null}
                 </div>
               </a>
             );
@@ -124,7 +130,8 @@ const page: React.FC = () => {
       isModalVisible === false &&
       r_change === false &&
       value >= moment('00:00:00', 'HH:mm:ss') && //今天以后的日期
-      localStorage.getItem('u_id') != null // localStorage 中的user存在
+      localStorage.getItem('u_id') != null && // localStorage 中的user存在
+      localStorage.getItem('is_teacher') === '1' // localStorage 中的user是老师
     ) {
       showModal();
     }
@@ -139,9 +146,19 @@ const page: React.FC = () => {
     if (localStorage.getItem('u_id') === null) {
       window.location.href = '/login';
     } else {
-      // 删除localStorage里的user
-      localStorage.removeItem('u_id');
-      message.success('退出登录');
+      confirm({
+        content: '确认登出？',
+        className: 'confirm',
+        onOk() {
+          console.log('OK');
+          // 删除localStorage里的user
+          localStorage.removeItem('u_id');
+          message.success('退出登录');
+        },
+        onCancel() {
+          console.log('Cancel');
+        },
+      });
     }
   };
 
@@ -151,7 +168,9 @@ const page: React.FC = () => {
         {monclasses.map((item, index) => {
           if (
             moment(item.s_time).format('YYYY-MM-DD') ===
-            moment().format('YYYY-MM-DD')
+              moment().format('YYYY-MM-DD') &&
+            localStorage.getItem('u_id') != null &&
+            localStorage.getItem('is_teacher') === '1'
           ) {
             return (
               <Alert
