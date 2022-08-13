@@ -117,6 +117,7 @@ const Information: React.FC = () => {
               .AddDefault({
                 c_name: m_item.c_name,
                 u_id: item.u_id,
+                s_time: m_item.s_time,
               })
               .then((res: any) => {
                 if (res.code === 1) {

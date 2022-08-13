@@ -81,7 +81,7 @@ class SlideItem extends React.Component {
             onClick={() => this.props.onDelete()}
             onMouseDown={this.back}
           >
-            拉黑
+            缺席
           </div>
         </div>
       </React.Fragment>
