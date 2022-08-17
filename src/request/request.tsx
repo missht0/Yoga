@@ -51,4 +51,3 @@ class Api {
   }
 }
 export default Api;
-export const GetClassByMon = (data: any) => request.get('/getClassByMon', data);
