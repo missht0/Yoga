@@ -19,6 +19,7 @@ const page: React.FC = () => {
       place: '师生活动中心2-208',
       price: 400,
       num: 10,
+      n_num: 0,
     },
   ]);
   const { confirm } = Modal;
@@ -91,7 +92,9 @@ const page: React.FC = () => {
                   '&price=' +
                   item.price +
                   '&num=' +
-                  item.num
+                  item.num +
+                  '&n_num=' +
+                  item.n_num
                 }
                 key={index}
                 onClick={() => {
@@ -106,7 +109,7 @@ const page: React.FC = () => {
                     alt=""
                   />
                   {/* {localStorage.getItem('is_teacher') === '1' ? ( */}
-                  <div className="num">{item.num}</div>
+                  <div className="num">{item.n_num}</div>
                   {/* ) : null} */}
                 </div>
               </a>

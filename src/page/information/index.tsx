@@ -18,6 +18,7 @@ const Information: React.FC = () => {
     place: '师生活动中心2-208',
     price: 400,
     num: 10,
+    n_num: 0,
   });
   const [s_info, setS_info] = useState([
     {
@@ -45,6 +46,7 @@ const Information: React.FC = () => {
   m_item.place = get('place');
   m_item.price = get('price');
   m_item.num = get('num');
+  m_item.n_num = get('n_num');
   let s_price = (
     m_item.num < 5 ? m_item.price / 5 : m_item.price / m_item.num
   ).toFixed(2);
@@ -292,6 +294,13 @@ const Information: React.FC = () => {
               <div className="up m-btn">
                 <Button type="primary" disabled size="large">
                   无报名权限
+                </Button>
+              </div>
+            ) : // 已满员
+            m_item.n_num === m_item.num ? (
+              <div className="up m-btn">
+                <Button type="primary" disabled size="large">
+                  已满员
                 </Button>
               </div>
             ) : // 如果未报名该课程
