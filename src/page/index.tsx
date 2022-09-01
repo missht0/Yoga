@@ -3,18 +3,19 @@ import { Alert, Calendar, message, Modal } from 'antd';
 import type { CalendarMode } from 'antd/es/calendar/generateCalendar';
 import moment, { Moment } from 'moment';
 import React, { useState, useEffect } from 'react';
-import Schedule from './schedule';
+import Schedule from '../component/schedule';
 import Api from '../request/request';
 import Svg from '../component/svg';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { Link } from 'umi';
 const page: React.FC = () => {
+  const [hasclass, setHasclass] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [clickdate, setClickdate] = useState(moment().format('YYYY-MM-DD'));
   const [monclasses, setMonclasses] = useState([
     {
       c_id: 1,
       c_name: '瑜伽',
-      s_time: moment(),
+      s_time: 0,
       time_long: '18:30:00',
       place: '师生活动中心2-208',
       price: 400,
@@ -76,31 +77,21 @@ const page: React.FC = () => {
             moment(item.s_time).format('YYYY-MM-DD') ===
             value.format('YYYY-MM-DD')
           ) {
+            if (
+              moment(item.s_time).format('YYYY-MM-DD') ===
+              moment().format('YYYY-MM-DD')
+            ) {
+              setHasclass(true);
+              console.log(item);
+
+              console.log(
+                'item日期' + moment(item.s_time).format('YYYY-MM-DD'),
+              );
+              console.log('今日日期' + moment().format('YYYY-MM-DD'));
+            }
+
             return (
-              <a
-                href={
-                  '/information?c_name=' +
-                  item.c_name +
-                  '&s_time=' +
-                  moment(item.s_time).format('YYYY-MM-DD HH:mm') +
-                  '&c_id=' +
-                  item.c_id +
-                  '&time_long=' +
-                  item.time_long +
-                  '&place=' +
-                  item.place +
-                  '&price=' +
-                  item.price +
-                  '&num=' +
-                  item.num +
-                  '&n_num=' +
-                  item.n_num
-                }
-                key={index}
-                onClick={() => {
-                  r_change = true;
-                }}
-              >
+              <Link to={'/information?item=' + JSON.stringify(item)}>
                 <div className="m-img">
                   <img
                     src={require('../../public/img/class/' +
@@ -108,11 +99,43 @@ const page: React.FC = () => {
                       '.svg')}
                     alt=""
                   />
-                  {/* {localStorage.getItem('is_teacher') === '1' ? ( */}
                   <div className="num">{item.n_num}</div>
-                  {/* ) : null} */}
                 </div>
-              </a>
+              </Link>
+              // <a
+              //   href={
+              //     '/information?c_name=' +
+              //     item.c_name +
+              //     '&s_time=' +
+              //     moment(item.s_time).format('YYYY-MM-DD HH:mm') +
+              //     '&c_id=' +
+              //     item.c_id +
+              //     '&time_long=' +
+              //     item.time_long +
+              //     '&place=' +
+              //     item.place +
+              //     '&price=' +
+              //     item.price +
+              //     '&num=' +
+              //     item.num +
+              //     '&n_num=' +
+              //     item.n_num
+              //   }
+              //   key={index}
+              //   onClick={() => {
+              //     r_change = true;
+              //   }}
+              // >
+              //   <div className="m-img">
+              //     <img
+              //       src={require('../../public/img/class/' +
+              //         item.c_name +
+              //         '.svg')}
+              //       alt=""
+              //     />
+              //     <div className="num">{item.n_num}</div>
+              //   </div>
+              // </a>
             );
           }
         })}
@@ -167,48 +190,55 @@ const page: React.FC = () => {
 
   return (
     <>
-      <div className="m-alert">
-        {monclasses.map((item, index) => {
-          if (
-            moment(item.s_time).format('YYYY-MM-DD') ===
-              moment().format('YYYY-MM-DD') &&
-            localStorage.getItem('u_id') != null &&
-            localStorage.getItem('is_teacher') === '1'
-          ) {
-            return (
-              <Alert
-                key={index}
-                message={
-                  moment(item.s_time).format('HH:mm') +
-                  '~' +
-                  moment(item.s_time).add(item.time_long, 'M').format('HH:mm') +
-                  ' ' +
-                  item.place
-                }
-                type="info"
-                icon={
-                  <img
-                    src={require('../../public/img/class/' +
-                      item.c_name +
-                      '.svg')}
-                    alt=""
-                  />
-                }
-                showIcon
-              />
-            );
-          }
-        })}
+      {hasclass &&
+      localStorage.getItem('u_id') != null &&
+      localStorage.getItem('is_teacher') === '1' ? (
+        <div className="m-alert">
+          {monclasses.map((item, index) => {
+            if (
+              moment(item.s_time).format('YYYY-MM-DD') ===
+              moment().format('YYYY-MM-DD')
+            ) {
+              return (
+                <Alert
+                  key={index}
+                  message={
+                    moment(item.s_time).format('HH:mm') +
+                    '~' +
+                    moment(item.s_time)
+                      .add(item.time_long, 'M')
+                      .format('HH:mm') +
+                    ' ' +
+                    item.place
+                  }
+                  type="info"
+                  icon={
+                    <img
+                      src={require('../../public/img/class/' +
+                        item.c_name +
+                        '.svg')}
+                      alt=""
+                    />
+                  }
+                  showIcon
+                />
+              );
+            }
+          })}
+        </div>
+      ) : null}
+      <div className="m-bd">
+        <div className="icon_box" onClick={checkuser}>
+          <Svg id={'za_usrs2'} size={24} color={`#3a98db`} />
+        </div>
+        <Calendar
+          onPanelChange={onPanelChange}
+          mode="month"
+          dateCellRender={dateCellRender}
+          onSelect={onSelect}
+        />
       </div>
-      <div className="icon_box" onClick={checkuser}>
-        <Svg id={'za_usrs2'} size={24} color={`#3a98db`} />
-      </div>
-      <Calendar
-        onPanelChange={onPanelChange}
-        mode="month"
-        dateCellRender={dateCellRender}
-        onSelect={onSelect}
-      />
+
       <Schedule
         isModalVisible={isModalVisible}
         handleCancel={handleCancel}

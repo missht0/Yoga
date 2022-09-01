@@ -40,6 +40,9 @@ class Api {
   AddDefault(data: any) {
     return request.post('/addDefault', data);
   }
+  DeleteDefault(data: any) {
+    return request.post('/deleteDefault', data);
+  }
   IsDefault(data: any) {
     return request.get('/isDefault', data);
   }

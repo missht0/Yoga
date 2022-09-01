@@ -1,13 +1,14 @@
 import './index.less';
-import React, { useEffect, useReducer } from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
-import { Alert, Row, Col, Button } from 'antd';
-import SlideItem from '../../component/slideItem';
+import { Alert, Row, Col } from 'antd';
 import moment from 'moment';
 import Api from '@/request/request';
 import Svg from '../../component/svg';
+import InfoCntList from '../../component/InfoCntList';
+import InfoBtn from '../../component/InfoBtn';
 
-const Information: React.FC = () => {
+const Information: React.FC = (props: any) => {
   const [isSignup, setIsSignup] = useState(false);
   const [isdefault, setIsdefault] = useState(false);
   const [m_item, setM_item] = useState({
@@ -32,31 +33,45 @@ const Information: React.FC = () => {
       default: true,
     },
   ]);
+  const [s_price, setS_price] = useState('');
+  const [l_price, setL_price] = useState('');
   const api = new Api();
-  // 从url中获得get传值
-  const get = (name: string) => {
-    // 从url中获得get传值
-    let arg: any = new URLSearchParams(window.location.search).get(name);
-    return arg;
-  };
-  m_item.c_id = get('c_id');
-  m_item.c_name = get('c_name');
-  m_item.s_time = moment(get('s_time'), 'YYYY-MM-DD HH:mm');
-  m_item.time_long = get('time_long');
-  m_item.place = get('place');
-  m_item.price = get('price');
-  m_item.num = get('num');
-  m_item.n_num = get('n_num');
-  let s_price = (
-    m_item.num < 5 ? m_item.price / 5 : m_item.price / m_item.num
-  ).toFixed(2);
-  let l_price = (
-    m_item.num < 5
-      ? (m_item.price / 5) * 1.5
-      : (m_item.price / m_item.num) * 1.5
-  ).toFixed(2);
-  console.log(m_item);
 
+  useEffect(() => {
+    let d: any = props.location.query.item;
+    var m_d: {
+      c_id: number;
+      c_name: string;
+      s_time: any;
+      time_long: string;
+      place: string;
+      price: number;
+      num: number;
+      n_num: number;
+    } = JSON.parse(d);
+    m_item.c_id = m_d.c_id;
+    m_item.c_name = m_d.c_name;
+    m_item.s_time = moment(m_d.s_time);
+    m_item.time_long = m_d.time_long;
+    m_item.place = m_d.place;
+    m_item.price = m_d.price;
+    m_item.num = m_d.num;
+    m_item.n_num = m_d.n_num;
+  }, []);
+  useEffect(() => {
+    setS_price(
+      (m_item.n_num < 5
+        ? m_item.price / 5
+        : m_item.price / m_item.n_num
+      ).toFixed(2),
+    );
+    setL_price(
+      (m_item.n_num < 5
+        ? (m_item.price / 5) * 1.5
+        : (m_item.price / m_item.n_num) * 1.5
+      ).toFixed(2),
+    );
+  }, [isSignup]);
   useEffect(() => {
     api
       .GetSignupUsers({
@@ -76,7 +91,7 @@ const Information: React.FC = () => {
         console.log(err);
       });
   }, [isSignup]);
-  console.log(s_info, isSignup);
+  // console.log(s_info, isSignup);
 
   // 若已经报名，则设置isSignup为true
   useEffect(() => {
@@ -88,25 +103,28 @@ const Information: React.FC = () => {
   }, [s_info]);
 
   // 是否在黑名单中
-  api
-    .IsDefault({
-      params: {
-        u_id: localStorage.getItem('u_id'),
-        c_name: m_item.c_name,
-      },
-    })
-    .then((res: any) => {
-      if (res.code === 1) {
-        console.log('IsDefault success', res);
-        setIsdefault(res.data);
-      } else {
-        console.log('error', res);
-      }
-    })
-    .catch((err: any) => {
-      console.log(err);
-    });
+  useEffect(() => {
+    api
+      .IsDefault({
+        params: {
+          u_id: localStorage.getItem('u_id'),
+          c_name: m_item.c_name,
+        },
+      })
+      .then((res: any) => {
+        if (res.code === 1) {
+          console.log('IsDefault success', res);
+          setIsdefault(res.data);
+        } else {
+          console.log('error', res);
+        }
+      })
+      .catch((err: any) => {
+        console.log(err);
+      });
+  }, [isdefault]);
 
+  // 缺席
   const onDelete = (value: any) => {
     return () => {
       console.log(value);
@@ -120,6 +138,7 @@ const Information: React.FC = () => {
                 c_name: m_item.c_name,
                 u_id: item.u_id,
                 s_time: m_item.s_time,
+                c_id: m_item.c_id,
               })
               .then((res: any) => {
                 if (res.code === 1) {
@@ -135,11 +154,42 @@ const Information: React.FC = () => {
           return item;
         }),
       );
+      // console.log(s_info);
+    };
+  };
+  // 出席
+  const onBack = (value: any) => {
+    return () => {
+      console.log(value);
+      setS_info(
+        s_info.map((item: any) => {
+          if (item.u_name === value.u_name) {
+            item.default = false;
+            // 黑名单删除
+            api
+              .DeleteDefault({
+                c_id: m_item.c_id,
+                u_id: item.u_id,
+              })
+              .then((res: any) => {
+                if (res.code === 1) {
+                  console.log('DeleteDefault success', res);
+                } else {
+                  console.log('error', res);
+                }
+              })
+              .catch((err: any) => {
+                console.log(err);
+              });
+          }
+          return item;
+        }),
+      );
       console.log(s_info);
     };
   };
   const backHome = () => {
-    history.go(-1);
+    window.location.href = '/';
   };
 
   const handleup = () => {
@@ -154,7 +204,8 @@ const Information: React.FC = () => {
       .then((res: any) => {
         if (res.code === 1) {
           setIsSignup(true);
-          console.log('Signup success', res);
+          m_item.n_num += 1;
+          console.log('Signup success', res, m_item.n_num);
         } else {
           console.log('error', res);
         }
@@ -172,7 +223,8 @@ const Information: React.FC = () => {
       .then((res: any) => {
         if (res.code === 1) {
           setIsSignup(false);
-          console.log('handledown success', res);
+          m_item.n_num -= 1;
+          console.log('handledown success', res, m_item.n_num);
         } else {
           console.log('error', res);
         }
@@ -215,7 +267,7 @@ const Information: React.FC = () => {
         <Row>
           <Col span={8}>{'预约：' + s_price}</Col>
           <Col span={8}>{'非预约：' + l_price}</Col>
-          <Col span={8}>{'预约人数：' + m_item.num}</Col>
+          <Col span={8}>{'预约人数：' + m_item.n_num + '/' + m_item.num}</Col>
         </Row>
       </div>
       <div className="m-cnt">
@@ -226,100 +278,24 @@ const Information: React.FC = () => {
             <Col span={6}>学费</Col>
           </Row>
         </div>
-        <div className="m-cnt-list">
-          {s_info.map((item, index) => {
-            if (
-              item.default === false &&
-              m_item.s_time < moment() &&
-              localStorage.getItem('u_id') != null &&
-              localStorage.getItem('is_teacher') === '1'
-            ) {
-              return (
-                <SlideItem
-                  key={index}
-                  children={
-                    <Row
-                      className={
-                        (m_item.s_time.format('YYYY-MM-DD') === item.signup
-                          ? 'today '
-                          : '') + (item.default ? 'default' : '')
-                      }
-                    >
-                      <Col span={6}>{item.u_name}</Col>
-                      <Col span={12}>
-                        {moment(item.signup).format('MM-DD HH:mm')}
-                      </Col>
-                      <Col span={6}>
-                        {m_item.s_time.format('YYYY-MM-DD') === item.signup
-                          ? l_price
-                          : s_price}
-                      </Col>
-                    </Row>
-                  }
-                  onDelete={onDelete(item)}
-                />
-              );
-            } else {
-              return (
-                <Row
-                  key={index}
-                  className={
-                    (m_item.s_time.format('YYYY-MM-DD') === item.signup
-                      ? 'today '
-                      : '') + (item.default ? 'default' : '')
-                  }
-                >
-                  <Col span={6}>{item.u_name}</Col>
-                  <Col span={12}>
-                    {moment(item.signup).format('MM-DD HH:mm')}
-                  </Col>
-                  <Col span={6}>
-                    {m_item.s_time.format('YYYY-MM-DD') === item.signup
-                      ? l_price
-                      : s_price}
-                  </Col>
-                </Row>
-              );
-            }
-          })}
-        </div>
+        <InfoCntList
+          s_info={s_info}
+          m_item={m_item}
+          s_price={s_price}
+          l_price={l_price}
+          onBack={onBack}
+          onDelete={onDelete}
+        />
       </div>
-      {localStorage.getItem('u_id') != null &&
-      localStorage.getItem('is_teacher') === '0' &&
-      moment().diff(m_item.s_time, 'm') < 0 ? (
-        <div className="signup">
-          {
-            // 学员在黑名单
-            isdefault ? (
-              <div className="up m-btn">
-                <Button type="primary" disabled size="large">
-                  无报名权限
-                </Button>
-              </div>
-            ) : // 已满员
-            m_item.n_num === m_item.num ? (
-              <div className="up m-btn">
-                <Button type="primary" disabled size="large">
-                  已满员
-                </Button>
-              </div>
-            ) : // 如果未报名该课程
-            isSignup ? (
-              <div className="down m-btn">
-                <Button onClick={handledown} size="large">
-                  取消报名
-                </Button>
-              </div>
-            ) : (
-              <div className="up m-btn">
-                <Button type="primary" onClick={handleup} size="large">
-                  报名
-                </Button>
-              </div>
-            )
-          }
-        </div>
-      ) : null}
+
+      {/* 报名按钮 */}
+      <InfoBtn
+        isdefault={isdefault}
+        m_item={m_item}
+        isSignup={isSignup}
+        handledown={handledown}
+        handleup={handleup}
+      />
     </div>
   );
 };

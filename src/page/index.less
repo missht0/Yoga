@@ -1,7 +1,7 @@
 #root {
   max-height: 100vh;
-
   .m-alert {
+    padding: 1rem 1rem 0 1rem;
     img {
       max-height: 1.5rem;
     }
@@ -9,8 +9,14 @@
   .icon_box {
     position: absolute;
     padding: 4px 15px;
+    top: 1rem;
+    left: 1rem;
+  }
+  .m-bd {
+    position: relative;
   }
   .ant-picker-calendar {
+    padding: 1rem;
     .ant-picker-calendar-header {
       padding: 0 0;
       padding-bottom: 1rem;
@@ -19,9 +25,12 @@
         width: 40%;
       }
     }
+    .ant-picker-body {
+      padding: 0 0;
+    }
 
     .ant-picker-calendar-date-content {
-      max-height: 10vh;
+      max-height: 9.6vh;
     }
 
     .ant-radio-group {
