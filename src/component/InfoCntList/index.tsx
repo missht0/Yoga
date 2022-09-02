@@ -2,8 +2,7 @@ import './index.less';
 import { Row, Col } from 'antd';
 import moment from 'moment';
 import { Key } from 'react';
-import SlideItem from '../slideItem';
-import SlideBack from '../slideBack';
+import { SlideItem, SlideBack, InfoItem } from '@/component';
 
 const InfoCntList = (props: InfoCntListProps) => {
   return (
@@ -20,23 +19,12 @@ const InfoCntList = (props: InfoCntListProps) => {
             <SlideItem
               key={index}
               children={
-                <Row
-                  className={
-                    props.m_item.s_time.format('YYYY-MM-DD') === item.signup
-                      ? 'today '
-                      : ''
-                  }
-                >
-                  <Col span={6}>{item.u_name}</Col>
-                  <Col span={12}>
-                    {moment(item.signup).format('MM-DD HH:mm')}
-                  </Col>
-                  <Col span={6}>
-                    {props.m_item.s_time.format('YYYY-MM-DD') === item.signup
-                      ? props.l_price
-                      : props.s_price}
-                  </Col>
-                </Row>
+                <InfoItem
+                  item={item}
+                  l_price={props.l_price}
+                  s_price={props.s_price}
+                  m_item={props.m_item}
+                />
               }
               onDelete={props.onDelete(item)}
             />
@@ -52,23 +40,12 @@ const InfoCntList = (props: InfoCntListProps) => {
             <SlideBack
               key={index}
               children={
-                <Row
-                  className={
-                    (props.m_item.s_time.format('YYYY-MM-DD') === item.signup
-                      ? 'today '
-                      : '') + 'default'
-                  }
-                >
-                  <Col span={6}>{item.u_name}</Col>
-                  <Col span={12}>
-                    {moment(item.signup).format('MM-DD HH:mm')}
-                  </Col>
-                  <Col span={6}>
-                    {props.m_item.s_time.format('YYYY-MM-DD') === item.signup
-                      ? props.l_price
-                      : props.s_price}
-                  </Col>
-                </Row>
+                <InfoItem
+                  item={item}
+                  l_price={props.l_price}
+                  s_price={props.s_price}
+                  m_item={props.m_item}
+                />
               }
               onBack={props.onBack(item)}
             />
@@ -76,22 +53,12 @@ const InfoCntList = (props: InfoCntListProps) => {
         } else {
           //非教师登录
           return (
-            <Row
-              key={index}
-              className={
-                (props.m_item.s_time.format('YYYY-MM-DD') === item.signup
-                  ? 'today '
-                  : '') + (item.default ? 'default' : '')
-              }
-            >
-              <Col span={6}>{item.u_name}</Col>
-              <Col span={12}>{moment(item.signup).format('MM-DD HH:mm')}</Col>
-              <Col span={6}>
-                {props.m_item.s_time.format('YYYY-MM-DD') === item.signup
-                  ? props.l_price
-                  : props.s_price}
-              </Col>
-            </Row>
+            <InfoItem
+              item={item}
+              l_price={props.l_price}
+              s_price={props.s_price}
+              m_item={props.m_item}
+            />
           );
         }
       })}

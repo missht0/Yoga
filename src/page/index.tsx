@@ -3,9 +3,9 @@ import { Alert, Calendar, message, Modal } from 'antd';
 import type { CalendarMode } from 'antd/es/calendar/generateCalendar';
 import moment, { Moment } from 'moment';
 import React, { useState, useEffect } from 'react';
-import Schedule from '../component/schedule';
+import { Schedule, Svg } from '../component';
 import Api from '../request/request';
-import Svg from '../component/svg';
+
 import { Link } from 'umi';
 const page: React.FC = () => {
   const [hasclass, setHasclass] = useState(false);
@@ -91,7 +91,7 @@ const page: React.FC = () => {
             }
 
             return (
-              <Link to={'/information?item=' + JSON.stringify(item)}>
+              <Link to={'/information?item=' + encodeURI(JSON.stringify(item))}>
                 <div className="m-img">
                   <img
                     src={require('../../public/img/class/' +

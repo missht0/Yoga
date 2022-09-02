@@ -5,8 +5,9 @@ import { Alert, Row, Col } from 'antd';
 import moment from 'moment';
 import Api from '@/request/request';
 import Svg from '../../component/svg';
-import InfoCntList from '../../component/InfoCntList';
-import InfoBtn from '../../component/InfoBtn';
+import { InfoCntList, InfoBtn } from '../../component';
+// import InfoCntList from '../../component/InfoCntList';
+// import InfoBtn from '../../component/InfoBtn';
 
 const Information: React.FC = (props: any) => {
   const [isSignup, setIsSignup] = useState(false);
@@ -59,6 +60,8 @@ const Information: React.FC = (props: any) => {
     m_item.n_num = m_d.n_num;
   }, []);
   useEffect(() => {
+    console.log('isSignup', isSignup);
+
     setS_price(
       (m_item.n_num < 5
         ? m_item.price / 5
@@ -71,6 +74,7 @@ const Information: React.FC = (props: any) => {
         : (m_item.price / m_item.n_num) * 1.5
       ).toFixed(2),
     );
+    console.log('m_item', m_item, s_price, l_price, isSignup);
   }, [isSignup]);
   useEffect(() => {
     api
@@ -160,7 +164,7 @@ const Information: React.FC = (props: any) => {
   // 出席
   const onBack = (value: any) => {
     return () => {
-      console.log(value);
+      // console.log(value);
       setS_info(
         s_info.map((item: any) => {
           if (item.u_name === value.u_name) {
