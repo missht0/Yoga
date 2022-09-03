@@ -6,8 +6,6 @@ import moment from 'moment';
 import Api from '@/request/request';
 import Svg from '../../component/svg';
 import { InfoCntList, InfoBtn } from '../../component';
-// import InfoCntList from '../../component/InfoCntList';
-// import InfoBtn from '../../component/InfoBtn';
 
 const Information: React.FC = (props: any) => {
   const [isSignup, setIsSignup] = useState(false);
@@ -22,24 +20,12 @@ const Information: React.FC = (props: any) => {
     num: 10,
     n_num: 0,
   });
-  const [s_info, setS_info] = useState([
-    {
-      c_id: 1,
-      c_name: '瑜伽',
-      id: 4,
-      pay: 0,
-      signup: '08-06 10:00',
-      u_id: '',
-      u_name: '',
-      default: true,
-    },
-  ]);
+  const [s_info, setS_info] = useState<any>([]);
   const [s_price, setS_price] = useState('');
   const [l_price, setL_price] = useState('');
   const api = new Api();
 
   useEffect(() => {
-    let d: any = props.location.query.item;
     var m_d: {
       c_id: number;
       c_name: string;
@@ -49,7 +35,7 @@ const Information: React.FC = (props: any) => {
       price: number;
       num: number;
       n_num: number;
-    } = JSON.parse(d);
+    } = JSON.parse(props.location.query.item);
     m_item.c_id = m_d.c_id;
     m_item.c_name = m_d.c_name;
     m_item.s_time = moment(m_d.s_time);
@@ -85,8 +71,8 @@ const Information: React.FC = (props: any) => {
       })
       .then((res: any) => {
         if (res.code === 1) {
-          console.log('GetSignupUsers success', res);
           setS_info(res.data);
+          console.log('GetSignupUsers success s_info::', s_info);
         } else {
           console.log('error', res);
         }
@@ -99,11 +85,15 @@ const Information: React.FC = (props: any) => {
 
   // 若已经报名，则设置isSignup为true
   useEffect(() => {
-    s_info.map((item) => {
-      if (item.u_id === localStorage.getItem('u_id')) {
-        setIsSignup(true);
-      }
-    });
+    if (s_info.length > 0) {
+      s_info.map((item: any) => {
+        if (item.u_id === localStorage.getItem('u_id')) {
+          setIsSignup(true);
+        }
+      });
+    } else {
+      setIsSignup(false);
+    }
   }, [s_info]);
 
   // 是否在黑名单中
@@ -193,7 +183,7 @@ const Information: React.FC = (props: any) => {
     };
   };
   const backHome = () => {
-    window.location.href = '/';
+    history.go(-1);
   };
 
   const handleup = () => {
