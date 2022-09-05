@@ -48,9 +48,10 @@ const Schedule = (props: ScheduleProps) => {
       })
       .catch((err: any) => {
         console.log(err);
+      })
+      .finally(() => {
+        props.handleCancel();
       });
-
-    props.handleCancel();
   };
   const backHome = () => {
     props.handleCancel();

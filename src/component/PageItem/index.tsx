@@ -3,18 +3,19 @@ import moment from 'moment';
 import { Link } from 'umi';
 
 const PageItem = (props: PageItemProps) => {
+  const { value, monclasses, setHasclass } = props;
   return (
     <div className="tr-cnt">
-      {props.monclasses.map((item: any, index: any) => {
+      {monclasses.map((item: any, index: any) => {
         if (
           moment(item.s_time).format('YYYY-MM-DD') ===
-          props.value.format('YYYY-MM-DD')
+          value.format('YYYY-MM-DD')
         ) {
           if (
             moment(item.s_time).format('YYYY-MM-DD') ===
             moment().format('YYYY-MM-DD')
           ) {
-            props.setHasclass(true);
+            setHasclass(true);
             console.log(item);
 
             console.log('item日期' + moment(item.s_time).format('YYYY-MM-DD'));
