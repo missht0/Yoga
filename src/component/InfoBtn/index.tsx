@@ -40,15 +40,7 @@ const InfoBtn = (props: InfoBtnProps) => {
             )
           }
         </div>
-      ) : (
-        <div className="signup">
-          <div className="up m-btn">
-            <Button type="primary" disabled size="large">
-              超过报名时间
-            </Button>
-          </div>
-        </div>
-      )}
+      ) : null}
     </>
   );
 };
