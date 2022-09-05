@@ -4,6 +4,7 @@ import { Link } from 'umi';
 
 const PageItem = (props: PageItemProps) => {
   const { value, monclasses, setHasclass } = props;
+
   return (
     <div className="tr-cnt">
       {monclasses.map((item: any, index: any) => {
